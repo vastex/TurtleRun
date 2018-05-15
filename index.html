@@ -1,40 +1,62 @@
 <!doctype html>
 <html>
-  <head>
+<head>
     <title>Socket.IO chat</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
-      #messages { margin-bottom: 40px }
+        .divcenter {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            width: 550px;
+            height: 500px;
+        }
+        .gameBoard{
+            display:none;
+        }
     </style>
-  </head>
-  <body>
-    <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
+</head>
+<body>
+    <div class="container divcenter login">
+        <h4>New Game</h4>
+        <div class="form-group">
+            <label for="name">Player Name</label>
+            <input type="text" class="form-control" id="nameNew" aria-describedby="nameHelp" placeholder="Name">
+            <small id="nameHelp" class="form-text text-muted">Use a creative name. (Easter Eggs on special names)</small>
+            <button id="new" class="btn btn-primary">New Game</button>
+        </div>
+        <h4>Join existing Game</h4>
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" name="name" id="nameJoin" placeholder="Enter your name" required>
+            <input type="text" class="form-control" name="room" id="room" placeholder="Enter Game ID" required>
+            <button id="join" class="btn btn-primary">Start</button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="gameBoard">
+            <h1 id="userHello"></h1>
+            <h1 id="nurid"></h1>
+            <h4 id="countdown"></h4>
+            <button id="player1">Spieler 1</button>
+        </div>
+    </div>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="main.js"></script>
     <script>
-      $(function () {
-        var socket = io();
-        $('form').submit(function(){
-          socket.emit('chat message', $('#m').val());
-          $('#m').val('');
-          return false;
+        var pressed = 0;
+        $('#new').on('click', () => {
+            console.log($("#nurid"));
         });
-        socket.on('chat message', function (msg) {
-            console.log(msg);
-          $('#messages').append($('<li>').text(msg));
-          window.scrollTo(0, document.body.scrollHeight);
+        $('#player1').on('click', () => {
+            socket.broadcast.emit('users_count', clients);
+            console.log("amk");
         });
-      });
     </script>
-  </body>
+</body>
 </html>

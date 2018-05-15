@@ -1,18 +1,54 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var port = process.env.PORT || 3000;
+const express = require('express');
+const path = require('path');
 
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+const app = express();
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+
+let rooms = 0;
+
+app.use(express.static('.'));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-io.on('connection', function(socket){
-  socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
-  });
+io.on('connection', (socket) => {
+
+    // Create a new game room and notify the creator of game.
+    socket.on('createGame', (data) => {
+        socket.join(`room-${++rooms}`);
+        socket.emit('newGame', { name: data.name, room: `room-${rooms}` });
+    });
+
+    // Connect the Player 2 to the room he requested. Show error if room full.
+    socket.on('joinGame', function (data) {
+        var room = io.nsps['/'].adapter.rooms[data.room];
+        if (room && room.length === 1) {
+            socket.join(data.room);
+            socket.broadcast.to(data.room).emit('player1', {});
+            socket.emit('player2', { name: data.name, room: data.room })
+        } else {
+            socket.emit('err', { message: 'Sorry, The room is full!' });
+        }
+    });
+
+    /**
+       * Handle the turn played by either player and notify the other.
+       */
+    socket.on('playTurn', (data) => {
+        socket.broadcast.to(data.room).emit('turnPlayed', {
+            tile: data.tile,
+            room: data.room
+        });
+    });
+
+    /**
+       * Notify the players about the victor.
+       */
+    socket.on('gameEnded', (data) => {
+        socket.broadcast.to(data.room).emit('gameEnd', data);
+    });
 });
 
-http.listen(port, function(){
-  console.log('listening on *:' + port);
-});
+server.listen(process.env.PORT || 3000);
