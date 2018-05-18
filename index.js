@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 
 const app = express();
 const server = require('http').Server(app);
@@ -8,6 +9,7 @@ const io = require('socket.io')(server);
 let rooms = 0;
 
 app.use(express.static('.'));
+app.use(cors());
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
@@ -28,6 +30,7 @@ io.on('connection', (socket) => {
             socket.join(data.room);
             socket.broadcast.to(data.room).emit('player1', {});
             socket.emit('player2', { name: data.name, room: data.room })
+            socket.emit('player3', { name: data.name, room: data.room })
         } else {
             socket.emit('err', { message: 'Sorry, The room is full!' });
         }
@@ -37,6 +40,9 @@ io.on('connection', (socket) => {
        * Handle the turn played by either player and notify the other.
        */
     socket.on('playTurn', (data) => {
+        console.log("jooo");
+        console.log(data);
+        console.log(data.room);
         socket.broadcast.to(data.room).emit('turnPlayed', {
             tile: data.tile,
             room: data.room
@@ -51,4 +57,4 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(process.env.PORT || 3000);
+server.listen(process.env.PORT || 3000, function () { console.log("server running")});

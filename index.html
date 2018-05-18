@@ -18,6 +18,35 @@
         .gameBoard{
             display:none;
         }
+        .brett{
+            background-image:url("../images/spielbrett.png");
+            width: 1400px;
+            height: 500px;
+        }
+        .p1{
+            width: 100px;
+            height: 100px;
+            position:absolute;
+            top: 215px;
+            left: 490px;
+            background-image: url(../images/spielfigur1.png);
+        }
+        .p2{
+            width: 100px;
+            height: 100px;
+            position:absolute;
+            top: 315px;
+            left: 490px;
+            background-image: url(../images/spielfigur2.png);
+        }
+        .p3{
+            width: 100px;
+            height: 100px;
+            position:absolute;
+            top: 415px;
+            left: 490px;
+            background-image: url(../images/spielfigur3.png);
+        }
     </style>
 </head>
 <body>
@@ -40,23 +69,20 @@
     <div class="container">
         <div class="gameBoard">
             <h1 id="userHello"></h1>
-            <h1 id="nurid"></h1>
             <h4 id="countdown"></h4>
             <button id="player1">Spieler 1</button>
+            <button id="player2">Spieler 2</button>
+            <button id="player3">Spieler 3</button>
+            <div class="brett">
+                <div id="p1" class="p1"></div>
+                <div id="p2" class="p2"></div>
+                <div id="p3" class="p3"></div>
+            </div>
         </div>
     </div>
+
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="main.js"></script>
-    <script>
-        var pressed = 0;
-        $('#new').on('click', () => {
-            console.log($("#nurid"));
-        });
-        $('#player1').on('click', () => {
-            socket.broadcast.emit('users_count', clients);
-            console.log("amk");
-        });
-    </script>
 </body>
 </html>
